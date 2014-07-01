@@ -1,0 +1,28 @@
+# REST API calls
+# There is a test user named test which can be used make API calls
+# The test user's token is 567219d2428d506312fb9716172499a3aae3fd46
+
+
+# Create a user account (all fields must be present)
+curl -X 'POST' -H 'Content-Type: application/json' -d '{"username": "test1", "email": "test@gmail.com", "first_name": "Firstname", "last_name": "Lastname", "password": "aaa"}' http://localhost:8000/coconnect/register/
+# Return: {"token": "567219d2428d506312fb9716172499a3aae3fd46"}
+
+
+# Create or update user profile
+curl -X 'POST' -H 'Content-Type: application/json' -H 'Authorization: Token 567219d2428d506312fb9716172499a3aae3fd46' -d '{"company": "coconnect", "title": "grunt", "industry": "software", "headline": "developer"}' http://localhost:8000/coconnect/profile/
+# Return: Nothing
+
+
+# Get user profile information
+curl -X 'GET' -H 'Content-Type: application/json' -H 'Authorization: Token 567219d2428d506312fb9716172499a3aae3fd46' http://localhost:8000/coconnect/profile/
+# Return: {"headline": "", "company": "", "industry": "", "title": ""}
+
+
+# Add user's coordinates
+curl -X 'POST' -H 'Content-Type: application/json' -H 'Authorization: Token 567219d2428d506312fb9716172499a3aae3fd46' -d '{"latitude": "0", "longitude": "90"}' http://localhost:8000/coconnect/recordPlace/
+# Return: Nothing
+
+
+# Get people in user's proximity
+curl -X 'GET' -H 'Content-Type: application/json' -H 'Authorization: Token 567219d2428d506312fb9716172499a3aae3fd46' -d '{"latitude": "5", "longitude": "-5"}' http://localhost:8000/coconnect/proximity/
+# Return: List of dictionaries with first and last name
