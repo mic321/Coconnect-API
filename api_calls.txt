@@ -4,25 +4,25 @@
 
 
 # Create a user account (all fields must be present)
-curl -X 'POST' -H 'Content-Type: application/json' -d '{"username": "test", "email": "test@gmail.com", "first_name": "John", "last_name": "Doe", "password": "aaa"}' http://localhost:8000/coconnect/register/
+curl -X 'POST' -H 'Content-Type: application/json' -d '{"username": "test", "email": "test@gmail.com", "first_name": "John", "last_name": "Doe", "password": "aaa"}' http://54.187.59.184:8000/coconnect/register/
 # Return: {"token": "bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0"}
 
 
 # Create or update user profile (must be POST)
-curl -X 'POST' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' -d '{"company": "coconnect", "title": "grunt", "industry": "software", "headline": "developer"}' http://localhost:8000/coconnect/profile/
+curl -X 'POST' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' -d '{"company": "coconnect", "title": "grunt", "industry": "software", "headline": "developer"}' http://54.187.59.184:8000/coconnect/profile/
 # Return: Nothing
 
 
 # Get user profile information
-curl -X 'GET' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' http://localhost:8000/coconnect/profile/
+curl -X 'GET' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' http://54.187.59.184:8000/coconnect/profile/
 # Return: {"headline": "developer", "company": "coconnect", "industry": "software", "title": "grunt"}
 
 
 # Add user's coordinates
-curl -X 'POST' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' -d '{"latitude": "0", "longitude": "90"}' http://localhost:8000/coconnect/recordPlace/
+curl -X 'POST' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' -d '{"latitude": "0", "longitude": "90"}' http://54.187.59.184:8000/coconnect/recordPlace/
 # Return: Nothing
 
 
 # Get people in user's proximity
-curl -X 'GET' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' -d '{"latitude": "5", "longitude": "-5"}' http://localhost:8000/coconnect/proximity/
+curl -X 'GET' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' -d '{"latitude": "5", "longitude": "-5"}' http://54.187.59.184:8000/coconnect/proximity/
 # Return: List of dictionaries with first and last name
