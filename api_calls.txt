@@ -26,3 +26,8 @@ curl -X 'POST' -H 'Content-Type: application/json' -H 'Authorization: Token bba0
 # Get people in user's proximity
 curl -X 'GET' -H 'Content-Type: application/json' -H 'Authorization: Token bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0' -d '{"latitude": "5", "longitude": "-5"}' http://54.187.59.184:8000/coconnect/proximity/
 # Return: List of dictionaries with first and last name
+
+
+# Login into a user account (returns the user's token)
+curl -X POST -H 'Content-Type: application/json' -d '{"username": "test", "password": "aaa"}' http://54.187.59.184:8000/api-token-auth/
+{"token": "bba0c2e51b5e4d3df8fdb13c0e7fa6ccfcfe67f0"}
