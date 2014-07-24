@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import exception_handler
 
 from mobile.serializers import UserSerializer #, GeolocationSerializer
 from mobile.models import Company, Title, Industry, Headline, Geolocation
@@ -14,7 +15,9 @@ from mobile.models import Company, Title, Industry, Headline, Geolocation
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D
 
-import datetime
+from django.db.utils import IntegrityError
+
+import sys, datetime
 
 @api_view(['POST'])
 def registerUser(request):
@@ -24,16 +27,25 @@ def registerUser(request):
 
 	serializer = UserSerializer(data = request.DATA)
 	if serializer.is_valid():
-		User.objects.create_user(
-			email = serializer.init_data['email'],
-			username = serializer.init_data['username'],
-			password = serializer.init_data['password'],
-			first_name = serializer.init_data['first_name'],
-			last_name = serializer.init_data['last_name']
-		)
-		## I believe Django's signals are handled synchronously so the token create by now
-		token = Token.objects.filter(user__username = serializer.data['username'])[0]
-		return Response({'token': token.key}, status = status.HTTP_201_CREATED)
+		try:
+			User.objects.create_user(
+				email = serializer.init_data['email'],
+				username = serializer.init_data['username'],
+				password = serializer.init_data['password'],
+				first_name = serializer.init_data['first_name'],
+				last_name = serializer.init_data['last_name']
+			)
+			## I believe Django's signals are handled synchronously so the token should be created by now
+			token = Token.objects.filter(user__username = serializer.data['username'])[0]	
+		except IntegrityError as e:
+			return Response(data = {'details': 'IntegrityError: Username likely already exists'}, status = status.HTTP_400_BAD_REQUEST)
+		except:
+			e = sys.exc_info()[0]
+			return Response(data = {'details': str(e)}, status = status.HTTP_400_BAD_REQUEST)
+		return Response(
+			data = {'token': token.key}, 
+			status = status.HTTP_201_CREATED,
+			headers = {'Access-Control-Allow-Origin': '*'})
 	else:
 		return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
@@ -66,7 +78,10 @@ def userProfile(request):
 		if h.exists():
 			data_response['headline'] = h[0].headline 
 
-		return Response(data_response, status = status.HTTP_200_OK)
+		return Response(
+			data = data_response,
+			status = status.HTTP_200_OK,
+			headers = {'Access-Control-Allow-Origin': '*'})
 	
 	elif request.method == 'POST':
 		
@@ -81,12 +96,18 @@ def userProfile(request):
 		
 		## Update user's headline data independently because Headline objects have
 		## a one to one relationship with user
-		if hasattr(user, 'headline'):
-			user.headline.delete()
-		if headline:
-			h = Headline(headline = headline, user = user)
-			h.save()
-		return Response(status = status.HTTP_200_OK)
+		try:
+			if hasattr(user, 'headline'):
+				user.headline.delete()
+			if headline:
+				h = Headline(headline = headline, user = user)
+				h.save()
+		except:
+			e = sys.exc_info()[0]
+			return Response(data = {'details': str(e)}, status = status.HTTP_400_BAD_REQUEST)
+		return Response(data = {'details': 'Success'},
+			status = status.HTTP_200_OK,
+			headers = {'Access-Control-Allow-Origin': '*'})
 
 	
 def respondToPOST(profile_class, associated_manager, user_input, model_field, user):
@@ -115,7 +136,9 @@ def recordPlace(request):
 	if geo:
 		g = Geolocation(position = geo, user = request.user)
 		g.save()
-		return Response(status = status.HTTP_201_CREATED)
+		return Response(
+			status = status.HTTP_201_CREATED,
+			headers = {'Access-Control-Allow-Origin': '*'})
 	else:
 		return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
@@ -149,4 +172,7 @@ def getUsersInProximity(request):
 	)
 	
 	peoples = [ {'first_name': r.first_name, 'last_name':r.last_name} for r in qs]
-	return Response({'people': peoples}, status = status.HTTP_201_CREATED)
+	return Response(
+		data = {'people': peoples},
+		status = status.HTTP_201_CREATED,
+		headers = {'Access-Control-Allow-Origin': '*'})

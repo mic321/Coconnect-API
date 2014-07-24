@@ -72,6 +72,10 @@ DATABASES = {
     }
 }
 
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler'
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
