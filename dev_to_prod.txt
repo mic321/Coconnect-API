@@ -1,0 +1,2 @@
+This is a list of the differences between the development and production code.
+Different database passwords

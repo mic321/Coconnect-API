@@ -19,6 +19,10 @@ from django.db.utils import IntegrityError
 
 import sys, datetime
 
+# class CustomResponse(Response):
+# 	headers['Access-Control-Allow-Origin'] = '*'
+
+
 @api_view(['POST'])
 def registerUser(request):
 	"""
@@ -38,16 +42,25 @@ def registerUser(request):
 			## I believe Django's signals are handled synchronously so the token should be created by now
 			token = Token.objects.filter(user__username = serializer.data['username'])[0]	
 		except IntegrityError as e:
-			return Response(data = {'details': 'IntegrityError: Username likely already exists'}, status = status.HTTP_400_BAD_REQUEST)
+			return Response(
+				data = {'details': 'IntegrityError: Username likely already exists'},
+				status = status.HTTP_400_BAD_REQUEST,
+				headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
 		except:
 			e = sys.exc_info()[0]
-			return Response(data = {'details': str(e)}, status = status.HTTP_400_BAD_REQUEST)
+			return Response(
+				data = {'details': str(e)},
+				status = status.HTTP_400_BAD_REQUEST,
+				headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
 		return Response(
 			data = {'token': token.key}, 
 			status = status.HTTP_201_CREATED,
-			headers = {'Access-Control-Allow-Origin': '*'})
+			headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
 	else:
-		return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+		return Response(
+			data = serializer.errors,
+			status = status.HTTP_400_BAD_REQUEST,
+			headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
 
 
 @api_view(['GET', 'POST'])
@@ -80,8 +93,8 @@ def userProfile(request):
 
 		return Response(
 			data = data_response,
-			status = status.HTTP_200_OK,
-			headers = {'Access-Control-Allow-Origin': '*'})
+			status = status.HTTP_200_OK)
+			#headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
 	
 	elif request.method == 'POST':
 		
@@ -104,10 +117,14 @@ def userProfile(request):
 				h.save()
 		except:
 			e = sys.exc_info()[0]
-			return Response(data = {'details': str(e)}, status = status.HTTP_400_BAD_REQUEST)
-		return Response(data = {'details': 'Success'},
+			return Response(
+				data = {'details': str(e)},
+				status = status.HTTP_400_BAD_REQUEST,
+				headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
+		return Response(
+			data = {'details': 'Success'},
 			status = status.HTTP_200_OK,
-			headers = {'Access-Control-Allow-Origin': '*'})
+			headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
 
 	
 def respondToPOST(profile_class, associated_manager, user_input, model_field, user):
@@ -138,9 +155,12 @@ def recordPlace(request):
 		g.save()
 		return Response(
 			status = status.HTTP_201_CREATED,
-			headers = {'Access-Control-Allow-Origin': '*'})
+			headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
 	else:
-		return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+		return Response(
+			data = serializer.errors,
+			status = status.HTTP_400_BAD_REQUEST,
+			headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})
 
 
 @api_view(['POST'])
@@ -175,4 +195,4 @@ def getUsersInProximity(request):
 	return Response(
 		data = {'people': peoples},
 		status = status.HTTP_201_CREATED,
-		headers = {'Access-Control-Allow-Origin': '*'})
+		headers = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'})

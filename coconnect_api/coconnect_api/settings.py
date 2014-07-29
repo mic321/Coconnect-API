@@ -41,10 +41,12 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'django.contrib.gis',
     'south',
+    'corsheaders',
 )
 
 
 MIDDLEWARE_CLASSES = (
+	'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -56,7 +58,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'coconnect_api.urls'
 
 WSGI_APPLICATION = 'coconnect_api.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -94,3 +95,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ORIGIN_WHITELIST = (
+        'google.com',
+        'hostname.example.com',
+    )
+
+CORS_ALLOW_METHODS = (
+        'GET',
+        'POST',
+        'PUT',
+        'PATCH',
+        'DELETE',
+        'OPTIONS'
+    )
